@@ -12,12 +12,12 @@ unit_a_one = Unit('A1', 1, 1)
 unit_a_two = Unit('A2', 1, 1)
 unit_b_one = Unit('B1', 2, 1)
 unit_b_two = Unit('B2', 2, 1)
-unit_c_one = Unit('C1', 1, 1)
-unit_c_two = Unit('C2', 1, 1)
-unit_d_one = Unit('D1', 1, 1)
-unit_d_two = Unit('D2', 1, 1)
-unit_e_one = Unit('E1', 1, 1)
-unit_e_two = Unit('E2', 1, 1)
+unit_c_one = Unit('C1', 3, 1)
+unit_c_two = Unit('C2', 3, 1)
+unit_d_one = Unit('D1', 4, 1)
+unit_d_two = Unit('D2', 4, 1)
+unit_e_one = Unit('E1', 5, 1)
+unit_e_two = Unit('E2', 5, 1)
 
 available_one_cost_units = [unit_a_one.name, unit_a_two.name]
 available_two_cost_units = [unit_b_one.name, unit_b_two.name]
@@ -113,6 +113,29 @@ class Shop:
             case 9:
                 self.percentage_adjust(.09, .15, .30, .30, 16)
 
+    def buy_unit(self, user_input):
+        try:
+            unit = user_input[4] + user_input[5]
+            for i in Shop.shop_units:
+                if i == unit:
+                    i = ' '
+                    print('hehe hoho')
+        except IndexError:
+            print("Invalid unit!")
+
+    def income(self):
+        if 0 <= p1.money <= 9:
+            p1.money += 0
+        elif 10 <= p1.money <= 19:
+            p1.money += 1
+        elif 20 <= p1.money <= 29:
+            p1.money += 2
+        elif 30 <= p1.money <= 39:
+            p1.money += 3
+        elif 40 <= p1.money <= 49:
+            p1.money += 4
+        else:
+            p1.money += 5
 
 def adjust_required_exp():
     match p1.level:
@@ -138,6 +161,8 @@ class Player:
         self.money = 50
         self.exp = 0
         self.lvl_up_xp_required = 2
+        self.hand = []
+        self.turncounter = 0
 
     def level_up(self):
         if self.exp >= self.lvl_up_xp_required:
@@ -163,9 +188,21 @@ def gameplay_loop():
             p1_shop.buy_exp()
         elif user_input == 'reroll':
             p1_shop.randomize_shop()
+        elif user_input.startswith('buy'):
+            p1_shop.buy_unit(user_input)
+            print('hehohoho')
+        elif user_input == 'end':
+            p1.turncounter += 1
+            p1_shop.randomize_shop()
+            p1.money += 4
+            p1_shop.income()
+
         else:
             print("\033[31;1;4mInvalid Command!\033[0m")
     p1_shop.counter = 0
+    p1_shop.randomize_shop()
+    print('heheheheh')
+    gameplay_loop()
 
 
 if __name__ == '__main__':
