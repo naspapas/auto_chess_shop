@@ -59,7 +59,6 @@ class Shop:
             else:
                 chosen_array.append(available_one_cost_units[randint(0, 1)])
 
-
     def turn_start_shop(self):
         i = 0
         while Shop.counter <= 4:
@@ -88,13 +87,11 @@ class Shop:
             Shop.counter += 1
         p1.money -= 2
 
-
     def buy_exp(self):
-        if p1.money >= 4:
-            p1.exp += 4
-            p1.money -= 4
-        else:
-            print("You don't have enough money to level up!")
+        p1.money >= 4
+        p1.exp += 4
+        p1.money -= 4
+
 
     def adjust_shop_chance(self):
         match self.player.level:
@@ -111,15 +108,17 @@ class Shop:
             case 8:
                 self.percentage_adjust(.16, .20, .35, .25, .04)
             case 9:
-                self.percentage_adjust(.09, .15, .30, .30, 16)
+                self.percentage_adjust(.09, .15, .30, .30, .16)
 
     def buy_unit(self, user_input):
         try:
             unit = user_input[4] + user_input[5]
-            for i in Shop.shop_units:
-                if i == unit:
-                    i = ' '
-                    print('hehe hoho')
+            for i in range(len(Shop.shop_units)):
+                if Shop.shop_units[i] == unit:
+                    print(f'You have purchased {Shop.shop_units[i]}')
+                    p1.hand.append(unit)
+                    Shop.shop_units[i] = ' '
+                    break
         except IndexError:
             print("Invalid unit!")
 
@@ -175,35 +174,53 @@ p1 = Player()
 
 def gameplay_loop():
     p1_shop = Shop(p1)
+
+    def endturnlogic():
+        p1.turncounter += 1
+        p1_shop.randomize_shop()
+        p1.money += 4
+        p1_shop.income()
+        p1.turncounter += 1
+        print(f"It is turn {p1.turncounter}")
+
     while True:
         p1_shop.turn_start_shop()
         print(f"\nYou are level {p1.level}, {p1.exp}/{p1.lvl_up_xp_required}")
         print(f'You have \033[32;1;4m${p1.money}\033[0m')
+        print(f'Your hand: \n{p1.hand}')
         p1.level_up()
         adjust_required_exp()
         p1_shop.adjust_shop_chance()
         user_input = input('> ')
 
         if user_input.lower() == 'level':
-            p1_shop.buy_exp()
+            if p1.money >= 4:
+                p1_shop.buy_exp()
+            else:
+                print("\033[31;1;4mYou don't have enough money to level!\033[0m")
         elif user_input == 'reroll':
-            p1_shop.randomize_shop()
+            if p1.money >= 2:
+                p1_shop.randomize_shop()
+            else:
+                print("\033[31;1;4mYou don't have enough money to reroll!\033[0m")
         elif user_input.startswith('buy'):
             p1_shop.buy_unit(user_input)
-            print('hehohoho')
+            for unit_copies in p1.hand:
+                if p1.hand.count(unit_copies) > 2:
+                    print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
+                    for unit_combination in p1.hand:
+                        if unit_combination == unit_copies:
+                            p1.hand.remove(unit_combination)
+                    p1.hand.append(unit_combination + ' **')
+
+
         elif user_input == 'end':
-            p1.turncounter += 1
-            p1_shop.randomize_shop()
-            p1.money += 4
-            p1_shop.income()
+            endturnlogic()
 
         else:
             print("\033[31;1;4mInvalid Command!\033[0m")
-    p1_shop.counter = 0
-    p1_shop.randomize_shop()
-    print('heheheheh')
-    gameplay_loop()
 
 
 if __name__ == '__main__':
+    print(f"\033[35;1;4mIt is Turn: {p1.turncounter + 1}\033[0m\n")
     gameplay_loop()
