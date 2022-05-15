@@ -49,15 +49,15 @@ class Shop:
     def shop_percent(self, chosen_array):
 
             if random() < self.five_cost_chance:
-                chosen_array.append(available_five_cost_units[randint(0, 1)])
+                chosen_array.append(available_five_cost_units[randint(0, len(available_five_cost_units) - 1)])
             elif random() < self.four_cost_chance:
-                chosen_array.append(available_four_cost_units[randint(0, 1)])
+                chosen_array.append(available_four_cost_units[randint(0, len(available_four_cost_units) - 1)])
             elif random() < self.three_cost_chance:
-                chosen_array.append(available_three_cost_units[randint(0, 1)])
+                chosen_array.append(available_three_cost_units[randint(0, len(available_three_cost_units) - 1)])
             elif random() < self.two_cost_chance:
-                chosen_array.append(available_two_cost_units[randint(0, 1)])
+                chosen_array.append(available_two_cost_units[randint(0, len(available_two_cost_units) - 1)])
             else:
-                chosen_array.append(available_one_cost_units[randint(0, 1)])
+                chosen_array.append(available_one_cost_units[randint(0, len(available_one_cost_units) - 1)])
 
     def turn_start_shop(self):
         i = 0
@@ -112,13 +112,15 @@ class Shop:
 
     def buy_unit(self, user_input):
         try:
-            unit = user_input[4] + user_input[5]
+            unit = user_input[4].upper() + user_input[5]
             for i in range(len(Shop.shop_units)):
-                if Shop.shop_units[i] == unit:
-                    print(f'You have purchased {Shop.shop_units[i]}')
+                if Shop.shop_units[i].upper() == unit:
+                    print(f'\nYou have purchased {Shop.shop_units[i]}\n')
                     p1.hand.append(unit)
                     Shop.shop_units[i] = ' '
                     break
+            else:
+                print(f"{user_input.removeprefix('buy')} is not a valid unit!")
         except IndexError:
             print("Invalid unit!")
 
@@ -135,6 +137,26 @@ class Shop:
             p1.money += 4
         else:
             p1.money += 5
+
+    def unit_cost(self, user_input):
+        if user_input[4] == 'a' and p1.money >= 1:
+            p1.money -= 1
+            return True
+        elif user_input[4] == 'b' and p1.money >= 2:
+            p1.money -= 2
+            return True
+        elif user_input[4] == 'c' and p1.money >= 3:
+            p1.money -= 3
+            return True
+        elif user_input[4] == 'd' and p1.money >= 4:
+            p1.money -= 4
+            return True
+        elif user_input[4] == 'e' and p1.money >= 5:
+            p1.money -= 5
+            return True
+        else:
+
+            return False
 
 def adjust_required_exp():
     match p1.level:
@@ -185,7 +207,7 @@ def gameplay_loop():
 
     while True:
         p1_shop.turn_start_shop()
-        print(f"\nYou are level {p1.level}, {p1.exp}/{p1.lvl_up_xp_required}")
+        print(f"\n\nYou are level {p1.level}, {p1.exp}/{p1.lvl_up_xp_required}")
         print(f'You have \033[32;1;4m${p1.money}\033[0m')
         print(f'Your hand: \n{p1.hand}')
         p1.level_up()
@@ -203,20 +225,24 @@ def gameplay_loop():
                 p1_shop.randomize_shop()
             else:
                 print("\033[31;1;4mYou don't have enough money to reroll!\033[0m")
-        elif user_input.startswith('buy'):
-            p1_shop.buy_unit(user_input)
-            for unit_copies in p1.hand:
-                if p1.hand.count(unit_copies) > 2:
-                    print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
-                    for unit_combination in p1.hand:
-                        if unit_combination == unit_copies:
-                            p1.hand.remove(unit_combination)
-                    p1.hand.append(unit_combination + ' **')
 
+        elif user_input.lower().startswith('buy'):
+            if len(p1.hand) < 10:
+                if p1_shop.unit_cost(user_input):
+                    p1_shop.buy_unit(user_input)
+                    for unit_copies in p1.hand:
+                        if p1.hand.count(unit_copies) > 2:
+                            print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
+                            for unit_combination in p1.hand:
+                                if unit_combination == unit_copies:
+                                    p1.hand.remove(unit_combination)
+                            p1.hand.append(unit_combination + '*')
+                else: print("You don't have the money to purchase this unit!")
+            else:
+                print(f'\033[31;1;4mYou have a full hand!\033[0m')
 
         elif user_input == 'end':
             endturnlogic()
-
         else:
             print("\033[31;1;4mInvalid Command!\033[0m")
 
