@@ -138,26 +138,6 @@ class Shop:
         else:
             p1.money += 5
 
-    def unit_cost(self, user_input):
-        if user_input[4] == 'a' and p1.money >= 1:
-            p1.money -= 1
-            return True
-        elif user_input[4] == 'b' and p1.money >= 2:
-            p1.money -= 2
-            return True
-        elif user_input[4] == 'c' and p1.money >= 3:
-            p1.money -= 3
-            return True
-        elif user_input[4] == 'd' and p1.money >= 4:
-            p1.money -= 4
-            return True
-        elif user_input[4] == 'e' and p1.money >= 5:
-            p1.money -= 5
-            return True
-        else:
-
-            return False
-
 def adjust_required_exp():
     match p1.level:
         case 2:
@@ -228,21 +208,21 @@ def gameplay_loop():
 
         elif user_input.lower().startswith('buy'):
             if len(p1.hand) < 10:
-                if p1_shop.unit_cost(user_input):
-                    p1_shop.buy_unit(user_input)
-                    for unit_copies in p1.hand:
-                        if p1.hand.count(unit_copies) > 2:
-                            print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
-                            for unit_combination in p1.hand:
-                                if unit_combination == unit_copies:
-                                    p1.hand.remove(unit_combination)
-                            p1.hand.append(unit_combination + '*')
-                else: print("You don't have the money to purchase this unit!")
+
+                p1_shop.buy_unit(user_input)
+                for unit_copies in p1.hand:
+                    if p1.hand.count(unit_copies) > 2:
+                        print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
+                        for unit_combination in p1.hand:
+                            if unit_combination == unit_copies:
+                                p1.hand.remove(unit_combination)
+                        p1.hand.append(unit_combination + '*')
             else:
                 print(f'\033[31;1;4mYou have a full hand!\033[0m')
 
         elif user_input == 'end':
             endturnlogic()
+
         else:
             print("\033[31;1;4mInvalid Command!\033[0m")
 
