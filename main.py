@@ -117,12 +117,82 @@ class Shop:
                 if Shop.shop_units[i].upper() == unit:
                     print(f'\nYou have purchased {Shop.shop_units[i]}\n')
                     p1.hand.append(unit)
+
+                    if unit in available_one_cost_units:
+                        p1.money -= 1
+                    elif unit in available_two_cost_units:
+                        p1.money -= 2
+                    elif unit in available_two_cost_units:
+                        p1.money -= 3
+                    elif unit in available_two_cost_units:
+                        p1.money -= 4
+                    else:
+                        p1.money -= 5
                     Shop.shop_units[i] = ' '
                     break
             else:
                 print(f"{user_input.removeprefix('buy')} is not a valid unit!")
         except IndexError:
             print("Invalid unit!")
+
+    def sell_unit(self, user_input):
+        refund = 0
+        try:
+            unit = user_input[5].upper() + user_input[6] + user_input[7] + user_input[8]
+            for i in range(len(p1.hand)):
+                if p1.hand[i].upper() == unit:
+                    print(f'\nYou have sold {p1.hand[i]}\n')
+                    p1.hand.remove(unit)
+                    if user_input[5].upper() + user_input[6].upper() in available_one_cost_units:
+                        refund = 1
+                        if unit.count('*') == 1:
+                            p1.money += (3 * refund)
+                        if unit.count('*') == 2:
+                            p1.money += (9 * refund)
+
+                    elif user_input[5].upper() + user_input[6].upper() in available_two_cost_units:
+                        refund = 2
+                        if unit.count('*') == 1:
+                            p1.money += (3 * refund)
+                        if unit.count('*') == 2:
+                            p1.money += (9 * refund)
+
+                    elif user_input[5].upper() + user_input[6].upper() in available_three_cost_units:
+                        refund = 3
+                        if unit.count('*') == 1:
+                            p1.money += (3 * refund)
+                        if unit.count('*') == 2:
+                            p1.money += (9 * refund)
+
+                    elif user_input[5].upper() + user_input[6].upper() in available_four_cost_units:
+                        refund = 4
+                        if unit.count('*') == 1:
+                            p1.money += (3 * refund)
+                        if unit.count('*') == 2:
+                            p1.money += (9 * refund)
+
+                    else:
+                        refund = 5
+                        if unit.count('*') == 1:
+                            p1.money += (3 * refund)
+                        if unit.count('*') == 2:
+                            p1.money += (9 * refund)
+                    Shop.shop_units[i] = ' '
+                    break
+            else:
+                print(f"{user_input.removeprefix('sell')} is not a valid unit!")
+        except IndexError:
+            print("Invalid unit!")
+
+    def combine_units(self):
+        for unit_copies in p1.hand:
+            if p1.hand.count(unit_copies) > 2:
+                print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
+                for unit_combination in p1.hand:
+                    if unit_combination == unit_copies:
+                        p1.hand.remove(unit_combination)
+                p1.hand.remove(unit_copies)
+                p1.hand.append(unit_combination + '*')
 
     def income(self):
         if 0 <= p1.money <= 9:
@@ -182,8 +252,7 @@ def gameplay_loop():
         p1_shop.randomize_shop()
         p1.money += 4
         p1_shop.income()
-        p1.turncounter += 1
-        print(f"It is turn {p1.turncounter}")
+        print(f"\033[35;1;4mIt is Turn: {p1.turncounter + 1}\033[0m\n")
 
     while True:
         p1_shop.turn_start_shop()
@@ -200,7 +269,7 @@ def gameplay_loop():
                 p1_shop.buy_exp()
             else:
                 print("\033[31;1;4mYou don't have enough money to level!\033[0m")
-        elif user_input == 'reroll':
+        elif user_input.lower() == 'reroll':
             if p1.money >= 2:
                 p1_shop.randomize_shop()
             else:
@@ -208,17 +277,12 @@ def gameplay_loop():
 
         elif user_input.lower().startswith('buy'):
             if len(p1.hand) < 10:
-
                 p1_shop.buy_unit(user_input)
-                for unit_copies in p1.hand:
-                    if p1.hand.count(unit_copies) > 2:
-                        print(f'\033[31;1;4mYou have combined three copies of {unit_copies}!\033[0m')
-                        for unit_combination in p1.hand:
-                            if unit_combination == unit_copies:
-                                p1.hand.remove(unit_combination)
-                        p1.hand.append(unit_combination + '*')
             else:
                 print(f'\033[31;1;4mYou have a full hand!\033[0m')
+
+        elif user_input.lower().startswith('sell'):
+            p1_shop.sell_unit(user_input)
 
         elif user_input == 'end':
             endturnlogic()
@@ -226,7 +290,14 @@ def gameplay_loop():
         else:
             print("\033[31;1;4mInvalid Command!\033[0m")
 
+        # Double method, very filthy, must clean
+        p1_shop.combine_units()
+        p1_shop.combine_units()
+
 
 if __name__ == '__main__':
     print(f"\033[35;1;4mIt is Turn: {p1.turncounter + 1}\033[0m\n")
-    gameplay_loop()
+    if p1.turncounter <= 50:
+        gameplay_loop()
+    else:
+        print(f"\033[35;1;4mIt is Turn: {p1.turncounter + 1}\033[0m\n")
