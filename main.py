@@ -1,5 +1,5 @@
 from random import *
-
+import csv
 
 class Unit:
     def __init__(self, name, rarity, rank):
@@ -7,6 +7,14 @@ class Unit:
         self.rarity = rarity
         self.rank = rank
 
+
+file = open("units.csv")
+unitcsv = csv.reader(file)
+unit_list = []
+for unit in unitcsv:
+    unit_list.append(unit)
+print(unit_list)
+file.close()
 
 unit_a_one = Unit('A1', 1, 1)
 unit_a_two = Unit('A2', 1, 1)
@@ -140,7 +148,7 @@ class Shop:
         try:
             unit = user_input[5].upper() + user_input[6] + user_input[7] + user_input[8]
             for i in range(len(p1.hand)):
-                if p1.hand[i].upper() == unit:
+                if p1.hand[i].upper() == unit[5] + unit[6]:
                     print(f'\nYou have sold {p1.hand[i]}\n')
                     p1.hand.remove(unit)
                     if user_input[5].upper() + user_input[6].upper() in available_one_cost_units:
@@ -265,10 +273,14 @@ def gameplay_loop():
         user_input = input('> ')
 
         if user_input.lower() == 'level':
-            if p1.money >= 4:
+            if p1.money >= 4 and p1.level < 9:
                 p1_shop.buy_exp()
-            else:
+            elif p1.money <= 3:
                 print("\033[31;1;4mYou don't have enough money to level!\033[0m")
+            else:
+
+                print("\033[31;1;4mYou are already MAX level\033[0m")
+
         elif user_input.lower() == 'reroll':
             if p1.money >= 2:
                 p1_shop.randomize_shop()
