@@ -2,36 +2,31 @@ from random import *
 import csv
 
 class Unit:
-    def __init__(self, name, rarity, rank):
+    def __init__(self, name, rarity):
         self.name = name
         self.rarity = rarity
-        self.rank = rank
 
+available_one_cost_units = []
+available_two_cost_units = []
+available_three_cost_units = []
+available_four_cost_units = []
+available_five_cost_units = []
 
 file = open("units.csv")
 unitcsv = csv.reader(file)
 unit_list = []
 for unit in unitcsv:
-    unit_list.append(unit)
-print(unit_list)
+    if unit[1] == '1':
+        available_one_cost_units.append(unit[0])
+    elif unit[1] == '2':
+        available_two_cost_units.append(unit[0])
+    elif unit[1] == '3':
+        available_three_cost_units.append(unit[0])
+    elif unit[1] == '4':
+        available_four_cost_units.append(unit[0])
+    else:
+        available_five_cost_units.append(unit[0])
 file.close()
-
-unit_a_one = Unit('A1', 1, 1)
-unit_a_two = Unit('A2', 1, 1)
-unit_b_one = Unit('B1', 2, 1)
-unit_b_two = Unit('B2', 2, 1)
-unit_c_one = Unit('C1', 3, 1)
-unit_c_two = Unit('C2', 3, 1)
-unit_d_one = Unit('D1', 4, 1)
-unit_d_two = Unit('D2', 4, 1)
-unit_e_one = Unit('E1', 5, 1)
-unit_e_two = Unit('E2', 5, 1)
-
-available_one_cost_units = [unit_a_one.name, unit_a_two.name]
-available_two_cost_units = [unit_b_one.name, unit_b_two.name]
-available_three_cost_units = [unit_c_one.name, unit_c_two.name]
-available_four_cost_units = [unit_d_one.name, unit_d_two.name]
-available_five_cost_units = [unit_e_one.name, unit_e_two.name]
 
 
 class Shop:
